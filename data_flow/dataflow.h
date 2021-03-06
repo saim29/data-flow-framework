@@ -15,13 +15,13 @@
 #include "llvm/IR/ValueMap.h"
 #include "llvm/IR/CFG.h"
 
+// can add support for more operators
+enum meetOperator {
 
-/*
+    INTERSECTION,
+    UNION
 
-Implementation Notes:
-- Value numbering to setup bitvectors
-
-*/
+};
 
 namespace llvm {
 
@@ -30,12 +30,18 @@ namespace llvm {
 
     class dataFlow {
 
+        private:
+        bool direction; // 0 forward; 1 backward
+        meetOperator meetOp;
+
+        // can use StringRef instead of BasicBlock*
+        ValueMap<BasicBlock*, BitVector> in; //in[B]
+        ValueMap<BasicBlock*, BitVector> out; //out[B]
+
+        BitVector T; //Top value of the semi lattice
+        BitVector B; //Bottom value of the semi lattic
+
         public:
-        bool direction; // 0 backward; 1 forward
-        bool meetOp; // 0 intersection; 1 Union
-        
-        BitVector transferFunc(BitVector in);
-        
 
     };
 
