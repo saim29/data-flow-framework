@@ -15,10 +15,31 @@
 #include "llvm/IR/ValueMap.h"
 #include "llvm/IR/CFG.h"
 
+
+/*
+
+Implementation Notes:
+- Value numbering to setup bitvectors
+
+*/
+
 namespace llvm {
 
 // Add definitions (and code, depending on your strategy) for your dataflow
 // abstraction here.
+
+    class dataFlow {
+
+        public:
+        bool direction; // 0 backward; 1 forward
+        bool meetOp; // 0 intersection; 1 Union
+        
+        BitVector transferFunc(BitVector in);
+        
+
+    };
+
+    
 
 }
 
