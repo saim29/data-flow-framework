@@ -16,50 +16,56 @@
 #include "llvm/IR/CFG.h"
 #include "llvm/Pass.h"
 
-
-/*
-
-Implementation Notes:
-- Value numbering to setup bitvectors
-
-*/
+#include "llvm/ADT/PostOrderIterator.h"
 
 namespace llvm {
 
-    // Direction
-    typedef enum Direction {
-        FORWARD,
-        BACKWARD
-    } Direction;
+    // Add definitions (and code, depending on your strategy) for your dataflow
+    // abstraction here.
 
-    // MeetOperator
-    typedef enum MeetOperator {
-        UNION,
-        INTERSECTION
-    } MeetOperator;
+    // set operations for bitvectors
+    BitVector set_union(BitVector b1, BitVector b2);
+    BitVector set_intersection(BitVector b1, BitVector b2);
+    BitVector set_diff(BitVector b1, BitVector b2);
 
-    // Transfer Function  
-    
+    // can add support for more meet operators here
+    enum meetOperator {
 
-    class dataFlow  {
-        
+        INTERSECTION,
+        UNION
 
-    public:
-        Direction direction;
-        MeetOperator meetOp;
-
-        dataFlow(Direction direction, MeetOperator meetOp) : direction(direction), meetOp (meetOp){ 
-            
-            outs() << "Here!" << direction << meetOp; 
-
-        }
-
-        virtual BitVector transferFunc (BitVector);
-        virtual void populateGlobalVector();
-        
     };
-    
 
+    typedef ValueMap <BasicBlock*, BitVector> BBVal;
+    typedef ValueMap <Value*, unsigned> VMap;
+
+    class DFF {
+
+        private:
+        bool direction; // 0 forward; 1 backward
+        meetOperator meetOp; // meet operator for preds or succ
+
+        // can use StringRef instead of BasicBlock*
+        VMap bvec_mapping; // maps the domain to the indexes in the bitmap
+        BBVal in; // in[B]
+        BBVal out; // out[B]
+
+        BitVector T; // Top value of the semi lattice
+        BitVector B; // Bottom value of the semi lattice
+
+        BitVector (*transfer)(BitVector, BitVector, BitVector); // function pointer to the transfer function of the analysis class
+
+        void traverseCFG(Function &F); // traversal of basicblocks based on the direction boolean
+
+        public:
+        // constructors for DFF
+        DFF();
+        DFF(bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector));
+
+        // destructor for DFF
+        ~DFF();
+
+    };
 }
 
 #endif
