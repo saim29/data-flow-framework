@@ -13,28 +13,37 @@ using namespace llvm;
 
 namespace {
 
+  class LivenessFramework: public dataFlow {
+
+    public:
+
+
+      LivenessFramework() : dataFlow(BACKWARD, UNION) {}
+
+      BitVector transferFunc(BitVector) override {
+        BitVector dummy;
+        return dummy;
+      }
+
+
+      void populateGlobalVector() override  {
+        
+
+      }
+
+  };
 
 
   class Liveness : public FunctionPass {
 
   public:
     static char ID;
+    LivenessFramework livenessFramework;
+    
 
-    // Need to fill this out
-    static BitVector livenessTransferFunc(BitVector input) {
-      BitVector dummy;
-      return dummy;
-    };
+    Liveness() : FunctionPass(ID) { }
 
-    Liveness() : FunctionPass(ID) { 
-
-      // Initialize the dataflow object
-
-      BitVector (*livenessTransferFunc_P) (BitVector) = &livenessTransferFunc; 
-      dataFlow dataFlowObj(BACKWARD, UNION, livenessTransferFunc_P);
-
-
-    }
+    
 
     virtual bool runOnFunction(Function& F) {
 

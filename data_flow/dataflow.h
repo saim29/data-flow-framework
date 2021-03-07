@@ -41,69 +41,35 @@ namespace llvm {
     // Transfer Function  
     
 
-    class dataFlow  : FunctionPass {
+    class dataFlow  {
+        
 
-    private:
+    public:
         Direction direction;
         MeetOperator meetOp;
-        BitVector (*transferFunc) (BitVector in);
-        BitVector (*domainCreator)();
-        
-        
-        // Mapping of the IN and OUT bitvectors to the basic block
 
-        ValueMap<BasicBlock*, BitVector> in; //in[B]
-        ValueMap<BasicBlock*, BitVector> out; //out[B]
-
-
-
-        BitVector T; //Top value of the semi lattice
-        BitVector B; //Bottom value of the semi lattice
-        
-    public:
-
-        static char ID;
-
-        dataFlow(Direction directionInput, MeetOperator meetOperatorInput, BitVector (*transferFuncInput) (BitVector)) : FunctionPass(ID) {
-
-            direction = directionInput;
-            meetOp = meetOperatorInput;
-            transferFunc = transferFuncInput;
-            //domainCreator = domainCreatorInput;
-        };
-
-
-        
-
-        bool runOnFunction(Function &F)  override {
+        dataFlow(Direction direction, MeetOperator meetOp) : direction(direction), meetOp (meetOp){ 
             
-            // Populate basic block in and out maps
+            outs() << "Here!" << direction << meetOp; 
 
-
-            for(BasicBlock& BB : F) {
-
-
-            }
-            return false;
         }
 
-
-
-
+        virtual BitVector transferFunc (BitVector);
+        virtual void populateGlobalVector();
         
-    
-
-    virtual void getAnalysisUsage(AnalysisUsage& AU) const {
-      AU.setPreservesAll();
-    }      
-        
-
-        
-
     };
-
     
 
 }
 
 #endif
+// Mapping of the IN and OUT bitvectors to the basic block
+
+//        ValueMap<BasicBlock*, BitVector> in; //in[B]
+//        ValueMap<BasicBlock*, BitVector> out; //out[B]
+
+
+
+//        BitVector T; //Top value of the semi lattice
+//        BitVector B; //Bottom value of the semi lattice
+        
