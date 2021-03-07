@@ -40,6 +40,10 @@ namespace {
       // compute use and def sets here
       populate_use_and_def(F);
 
+      // pass the use and def sets to the DFF
+      dff.setGen(use);
+      dff.setKill(def);
+
       // pass everything to the dff and start the analysis
 
       // Did not modify the incoming Function.

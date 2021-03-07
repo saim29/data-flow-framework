@@ -18,6 +18,7 @@
 // included for convenience
 #include "llvm/ADT/PostOrderIterator.h"
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/IR/DerivedTypes.h"
 
 namespace llvm {
 
@@ -37,8 +38,9 @@ namespace llvm {
 
     };
 
-    typedef ValueMap <BasicBlock*, BitVector> BBVal;
-    typedef ValueMap <Value*, unsigned> VMap;
+    typedef DenseMap <BasicBlock*, BitVector> BBVal;
+    typedef DenseMap <Value*, unsigned> VMap;
+    typedef std::vector<BasicBlock*> BBList;
 
     class DFF {
 
@@ -50,9 +52,13 @@ namespace llvm {
         meetOperator meetOp; // meet operator for preds or succ
 
         // can use StringRef instead of BasicBlock*
-        VMap bvec_mapping; // maps the domain to the indexes in the bitmap
+        VMap bvec_mapping; // maps the domain to the indexes in the bitmap. Note: Does the DFF need this?
         BBVal in; // in[B]
         BBVal out; // out[B]
+        
+        // gen and kill sets; Should be calculated by the specific analysis and passed to DFF
+        BBVal gen;
+        BBVal kill;
 
         BitVector T; // Top value of the semi lattice
         BitVector B; // Bottom value of the semi lattice
@@ -65,6 +71,13 @@ namespace llvm {
         // constructors for DFF
         DFF();
         DFF(Function *F, bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector), unsigned bitvec_size);
+
+        // methods to set specific sets
+        void setGen(BBVal gen);
+        void setKill(BBVal kill);
+
+        // function to generate possible return blocks
+        BBList getPossibleExitBlocks();
 
         // destructor for DFF
         ~DFF();

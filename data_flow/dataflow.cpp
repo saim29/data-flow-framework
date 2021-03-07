@@ -42,18 +42,40 @@ namespace llvm {
 
     for (BasicBlock &B : *F) {
 
-      if (direction) { 
-
-
-
-      } else {
-
-
-      }
       in[&B] = T;
       out[&B] = T;
 
     }
+  }
+
+  void DFF::setGen(BBVal gen) {
+
+    this->gen = gen;
+
+  }
+
+  void DFF::setKill(BBVal kill) {
+
+    this->kill = kill;
+
+  }
+
+  BBList DFF::getPossibleExitBlocks() {
+
+    BBList ret;
+
+    for (BasicBlock &B: *F) {
+
+      for (Instruction &I: B) {
+
+        if (dyn_cast<ReturnInst>(&I)) {
+          ret.push_back(&B);
+          break;
+        }
+
+      }
+    }
+    return ret;
   }
 
   void DFF::traverseCFG() {
@@ -61,21 +83,65 @@ namespace llvm {
     if (direction) {
 
       // backward analysis
+      // need exit block here but LLVM does not have an explicit exit block
+      BBList exitBlockPreds = getPossibleExitBlocks();
+      bool changed = false;
+
+      do {
+
+        changed = false;
+        std::queue<BasicBlock*> bfs;
+        DenseSet<BasicBlock*> visited;
+        
+        for(auto ele : exitBlockPreds) {
+
+          bfs.push(ele);
+
+        }
+
+        while (!bfs.empty()) {
+
+          BasicBlock *curr = bfs.front();
+          bfs.pop();
+
+          visited.insert(curr);
+
+          // push all succcessors in the queue
+          for (BasicBlock *pred : predecessors(curr)) {
+
+            if (visited.find(pred) == visited.end()) {
+
+              bfs.push(pred);
+
+            }
+          }
+
+          BitVector old_in = in[curr];
+          BitVector old_out = out[curr];
+
+          // call transfer function
+          BitVector new_in = transfer(out[curr], gen[curr], kill[curr]);
+
+          // compare the new in and out to the old ones
+          if (new_in != old_in) 
+            changed = true;
+
+        }
+
+      } while (changed);
+
 
     } else {
 
-      //reverse post order for fastest convergence
-
-      // forward analysis
+      //reverse post order for fastest convergence. Can implement this too
       // const BasicBlock *entry = &F.getEntryBlock();
 
       // for (po_iterator<BasicBlock*> I = po_begin(&F.getEntryBlock()), IE = po_end(&F.getEntryBlock()); I != IE; ++I) {
       
       // }
 
-
+      // forward analysis
       // breadth-first search solution
-
       BasicBlock *entry_block = &F->getEntryBlock();
 
       bool changed = false;
@@ -108,19 +174,19 @@ namespace llvm {
           BitVector old_out = out[curr];
 
           // call transfer function
+          BitVector new_out = transfer(in[curr], gen[curr], kill[curr]);
 
           // compare the new in and out to the old ones
+          if (new_out != old_out) 
+            changed = true;
 
-          // changed = true if they changed otherwise continue;
         }
 
       } while (changed);
-
     }
   }
 
   // definitions of set operations
-
   BitVector set_union(BitVector b1, BitVector b2) {
 
     unsigned size = b1.size();
