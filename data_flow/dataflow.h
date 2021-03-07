@@ -14,6 +14,7 @@
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/IR/ValueMap.h"
 #include "llvm/IR/CFG.h"
+#include "llvm/Pass.h"
 
 
 /*
@@ -25,16 +26,78 @@ Implementation Notes:
 
 namespace llvm {
 
-// Add definitions (and code, depending on your strategy) for your dataflow
-// abstraction here.
+    // Direction
+    typedef enum Direction {
+        FORWARD,
+        BACKWARD
+    } Direction;
 
-    class dataFlow {
+    // MeetOperator
+    typedef enum MeetOperator {
+        UNION,
+        INTERSECTION
+    } MeetOperator;
 
-        public:
-        bool direction; // 0 backward; 1 forward
-        bool meetOp; // 0 intersection; 1 Union
+    // Transfer Function  
+    
+
+    class dataFlow  : FunctionPass {
+
+    private:
+        Direction direction;
+        MeetOperator meetOp;
+        BitVector (*transferFunc) (BitVector in);
+        BitVector (*domainCreator)();
         
-        BitVector transferFunc(BitVector in);
+        
+        // Mapping of the IN and OUT bitvectors to the basic block
+
+        ValueMap<BasicBlock*, BitVector> in; //in[B]
+        ValueMap<BasicBlock*, BitVector> out; //out[B]
+
+
+
+        BitVector T; //Top value of the semi lattice
+        BitVector B; //Bottom value of the semi lattice
+        
+    public:
+
+        static char ID;
+
+        dataFlow(Direction directionInput, MeetOperator meetOperatorInput, BitVector (*transferFuncInput) (BitVector)) : FunctionPass(ID) {
+
+            direction = directionInput;
+            meetOp = meetOperatorInput;
+            transferFunc = transferFuncInput;
+            //domainCreator = domainCreatorInput;
+        };
+
+
+        
+
+        bool runOnFunction(Function &F)  override {
+            
+            // Populate basic block in and out maps
+
+
+            for(BasicBlock& BB : F) {
+
+
+            }
+            return false;
+        }
+
+
+
+
+        
+    
+
+    virtual void getAnalysisUsage(AnalysisUsage& AU) const {
+      AU.setPreservesAll();
+    }      
+        
+
         
 
     };

@@ -13,11 +13,28 @@ using namespace llvm;
 
 namespace {
 
+
+
   class Liveness : public FunctionPass {
+
   public:
     static char ID;
 
-    Liveness() : FunctionPass(ID) { }
+    // Need to fill this out
+    static BitVector livenessTransferFunc(BitVector input) {
+      BitVector dummy;
+      return dummy;
+    };
+
+    Liveness() : FunctionPass(ID) { 
+
+      // Initialize the dataflow object
+
+      BitVector (*livenessTransferFunc_P) (BitVector) = &livenessTransferFunc; 
+      dataFlow dataFlowObj(BACKWARD, UNION, livenessTransferFunc_P);
+
+
+    }
 
     virtual bool runOnFunction(Function& F) {
 
