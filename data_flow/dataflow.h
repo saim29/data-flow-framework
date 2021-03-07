@@ -15,7 +15,9 @@
 #include "llvm/IR/ValueMap.h"
 #include "llvm/IR/CFG.h"
 
+// included for convenience
 #include "llvm/ADT/PostOrderIterator.h"
+#include "llvm/ADT/DenseSet.h"
 
 namespace llvm {
 
@@ -41,6 +43,9 @@ namespace llvm {
     class DFF {
 
         private:
+
+        Function *F; // pointer to the function under inspection
+
         bool direction; // 0 forward; 1 backward
         meetOperator meetOp; // meet operator for preds or succ
 
@@ -54,12 +59,12 @@ namespace llvm {
 
         BitVector (*transfer)(BitVector, BitVector, BitVector); // function pointer to the transfer function of the analysis class
 
-        void traverseCFG(Function &F); // traversal of basicblocks based on the direction boolean
+        void traverseCFG(); // traversal of basicblocks based on the direction boolean
 
         public:
         // constructors for DFF
         DFF();
-        DFF(bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector));
+        DFF(Function *F, bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector), unsigned bitvec_size);
 
         // destructor for DFF
         ~DFF();

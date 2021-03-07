@@ -31,8 +31,11 @@ namespace {
       // traverse basicblocks to find a mapping between bitvector indexes and variables
       map_indexes(F);
 
+      // initialize top element and bottom element according to the meetOp
+      unsigned size_bitvec = bvec_mapping.size();
+
       //initialize data flow framework
-      DFF dff(true, INTERSECTION, &transfer_function);
+      DFF dff(&F, true, INTERSECTION, &transfer_function, size_bitvec);
 
       // compute use and def sets here
       populate_use_and_def(F);
