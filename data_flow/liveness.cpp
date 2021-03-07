@@ -29,11 +29,13 @@ namespace {
     virtual bool runOnFunction(Function& F) {
 
       // traverse basicblocks to find a mapping between bitvector indexes and variables
+      map_indexes(F);
 
       //initialize data flow framework
       DFF dff(true, INTERSECTION, &transfer_function);
 
       // compute use and def sets here
+      populate_use_and_def(F);
 
       // pass everything to the dff and start the analysis
 
@@ -45,7 +47,7 @@ namespace {
       AU.setPreservesAll();
     }
 
-    void map_domain(Function &F) {
+    void map_indexes(Function &F) {
 
       unsigned ind = 0;
       for (BasicBlock &B: F) {
@@ -59,11 +61,39 @@ namespace {
               bvec_mapping.insert({v, ind});
               ind++;
             }
+          }
+        }
+      }
+    }
+
+    void populate_use_and_def(Function &F) {
+
+      unsigned size = bvec_mapping.size();
+      for (BasicBlock &B: F) {
+        
+        BitVector bvec(size);
+        use.insert({&B, bvec});
+        def.insert({&B, bvec});
+
+        for (Instruction &I: B) {
+
+          Value *v = &I;
+
+          if (v->getNumUses() > 0) {
+            
+            unsigned ind = bvec_mapping[v];
+            def[&B][ind] = 1;
+
+          }
+
+          if (v->isUsedInBasicBlock(&B)) {
+
+            unsigned ind = bvec_mapping[v];
+            use[&B][ind] = 1;
 
           }
 
         }
-
       }
 
     }
