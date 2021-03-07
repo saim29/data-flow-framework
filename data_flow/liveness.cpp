@@ -16,6 +16,7 @@ namespace {
   class Liveness : public FunctionPass {
   public:
     static char ID;
+    friend BitVector transfer_function();
 
     Liveness() : FunctionPass(ID) { }
 
@@ -35,6 +36,10 @@ namespace {
 
   private:
   };
+
+  BitVector transfer_function() {
+    
+  }
 
   char Liveness::ID = 0;
   RegisterPass<Liveness> X("liveness", "ECE 5984 Liveness");
