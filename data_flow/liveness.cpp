@@ -13,20 +13,31 @@ using namespace llvm;
 
 namespace {
 
+  // declare transfer function here
+  BitVector transfer_function(BitVector out, BitVector use, BitVector def) {
+
+    BitVector intermediate = set_diff(out, def);
+    return set_union(intermediate, use);
+
+  }
+
   class Liveness : public FunctionPass {
   public:
     static char ID;
-    friend BitVector transfer_function();
-
     Liveness() : FunctionPass(ID) { }
 
     virtual bool runOnFunction(Function& F) {
 
+      // traverse basicblocks to find a mapping between bitvector indexes and variables
+
+      //initialize data flow framework
+      DFF dff(true, INTERSECTION, &transfer_function);
+
+      // compute use and def sets here
+
+      // pass everything to the dff and start the analysis
+
       // Did not modify the incoming Function.
-
-
-
-
       return false;
     }
 
@@ -34,12 +45,36 @@ namespace {
       AU.setPreservesAll();
     }
 
-  private:
-  };
+    void map_domain(Function &F) {
 
-  BitVector transfer_function() {
-    
-  }
+      unsigned ind = 0;
+      for (BasicBlock &B: F) {
+
+        for (Instruction &I: B) {
+
+          Value *v = &I;
+          if (v->getNumUses() > 0) {
+
+            if (bvec_mapping.find(v) == bvec_mapping.end()) {
+              bvec_mapping.insert({v, ind});
+              ind++;
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  private:
+
+    VMap bvec_mapping; // maps the domain to the indexes in the bitmap
+    BBVal use; // use set for all basic blocks
+    BBVal def; // def set for all basic blocks
+
+  };
 
   char Liveness::ID = 0;
   RegisterPass<Liveness> X("liveness", "ECE 5984 Liveness");
