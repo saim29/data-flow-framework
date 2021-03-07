@@ -18,6 +18,8 @@
 
 #include "llvm/ADT/PostOrderIterator.h"
 
+#include "available-support.h"
+
 namespace llvm {
 
     // Add definitions (and code, depending on your strategy) for your dataflow
@@ -38,6 +40,7 @@ namespace llvm {
 
     typedef ValueMap <BasicBlock*, BitVector> BBVal;
     typedef ValueMap <Value*, unsigned> VMap;
+    typedef std::map <Expression, unsigned> EMap;
 
     class DFF {
 
@@ -69,13 +72,3 @@ namespace llvm {
 }
 
 #endif
-// Mapping of the IN and OUT bitvectors to the basic block
-
-//        ValueMap<BasicBlock*, BitVector> in; //in[B]
-//        ValueMap<BasicBlock*, BitVector> out; //out[B]
-
-
-
-//        BitVector T; //Top value of the semi lattice
-//        BitVector B; //Bottom value of the semi lattice
-        

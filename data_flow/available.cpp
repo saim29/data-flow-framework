@@ -21,6 +21,7 @@ namespace {
     static char ID;
     
     AvailableExpressions() : FunctionPass(ID) { }
+
     
     virtual bool runOnFunction(Function& F) {
       
@@ -53,8 +54,46 @@ namespace {
       AU.setPreservesAll();
     }
     
+    void map_indexes(Function &F) {
+
+      // Use the expression class to get the indexes.
+      unsigned ind = 0;
+
+      for (BasicBlock &B: F) {
+
+        for (Instruction &I: B) {
+          
+          // Convert to expression only if a binary operator 
+          if(BinaryOperator *BO = dyn_cast<BinaryOperator>(&I)) {
+
+            Expression exp = Expression(&I);
+
+            EMap::iterator iter = exp_bvec_mapping.begin();
+            while(iter != exp_bvec_mapping.end()) {
+              if(iter->first == exp)
+                break;
+
+              iter++;
+            }
+
+            if(iter == exp_bvec_mapping.end()){
+              exp_bvec_mapping.insert({exp, ind});
+              ind++;
+            } 
+          }
+        }
+      }
+    }
+
+  
+  
   private:
+    EMap exp_bvec_mapping; // maps the domain to the indexes in the bitmap
+    BBVal e_gen; // use set for all basic blocks
+    BBVal e_kill; // def set for all basic blocks
+
   };
+//  };
   
   char AvailableExpressions::ID = 0;
   RegisterPass<AvailableExpressions> X("available",
