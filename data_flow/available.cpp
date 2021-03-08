@@ -105,12 +105,12 @@ namespace {
             Expression exp = Expression(&I);
 
             // Now look this expression up
-            EMap::iterator iter =  exp_bvec_mapping.find(exp)
+            EMap::iterator iter =  exp_bvec_mapping.find(exp);
             if(iter != exp_bvec_mapping.end()) {
               
               // Generate the expression
               unsigned index = iter->second;
-              e_gen.set(index)
+              e_gen[&B][index] = 1;
 
             }
 

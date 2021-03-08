@@ -11,54 +11,182 @@ namespace llvm {
 
   }
 
-  DFF::DFF(bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector)) {
+  DFF::DFF(Function *F, bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector), unsigned bitvec_size) {
 
+    this->F = F;
     this->direction = direction;
     this->meetOp = meetOp;
     this->transfer = transfer;
+    this->T.resize(bitvec_size);
+    this->B.resize(bitvec_size);
     
+    // initialize top and bottom elements of the semi-lattice
+    if (meetOp == INTERSECTION) {
+
+      for(int i=0; i<bitvec_size; i++) {
+
+        T[i] = 1;
+        // B[i] = 0;
+
+      }
+
+    } else if (meetOp == UNION) {
+
+      for(int i=0; i<bitvec_size; i++) {
+
+        // T[i] = 0;
+        B[i] = 1;
+
+      }
+    }
+
+    for (BasicBlock &B : *F) {
+
+      in[&B] = T;
+      out[&B] = T;
+
+    }
   }
 
-  void DFF::traverseCFG(Function &F) {
+  void DFF::setGen(BBVal gen) {
+
+    this->gen = gen;
+
+  }
+
+  void DFF::setKill(BBVal kill) {
+
+    this->kill = kill;
+
+  }
+
+  BBList DFF::getPossibleExitBlocks() {
+
+    BBList ret;
+
+    for (BasicBlock &B: *F) {
+
+      for (Instruction &I: B) {
+
+        if (dyn_cast<ReturnInst>(&I)) {
+          ret.push_back(&B);
+          break;
+        }
+
+      }
+    }
+    return ret;
+  }
+
+  void DFF::traverseCFG() {
 
     if (direction) {
 
       // backward analysis
+      // need exit block here but LLVM does not have an explicit exit block
+      BBList exitBlockPreds = getPossibleExitBlocks();
+      bool changed = false;
+
+      do {
+
+        changed = false;
+        std::queue<BasicBlock*> bfs;
+        DenseSet<BasicBlock*> visited;
+        
+        for(auto ele : exitBlockPreds) {
+
+          bfs.push(ele);
+
+        }
+
+        while (!bfs.empty()) {
+
+          BasicBlock *curr = bfs.front();
+          bfs.pop();
+
+          visited.insert(curr);
+
+          // push all succcessors in the queue
+          for (BasicBlock *pred : predecessors(curr)) {
+
+            if (visited.find(pred) == visited.end()) {
+
+              bfs.push(pred);
+
+            }
+          }
+
+          BitVector old_in = in[curr];
+          BitVector old_out = out[curr];
+
+          // call transfer function
+          BitVector new_in = transfer(out[curr], gen[curr], kill[curr]);
+
+          // compare the new in and out to the old ones
+          if (new_in != old_in) 
+            changed = true;
+
+        }
+
+      } while (changed);
+
 
     } else {
 
-      //reverse post order for fastest convergence
-
-      // forward analysis
+      //reverse post order for fastest convergence. Can implement this too
       // const BasicBlock *entry = &F.getEntryBlock();
 
       // for (po_iterator<BasicBlock*> I = po_begin(&F.getEntryBlock()), IE = po_end(&F.getEntryBlock()); I != IE; ++I) {
       
       // }
 
-
+      // forward analysis
       // breadth-first search solution
-
-      const BasicBlock *entry_block = &F.getEntryBlock();
+      BasicBlock *entry_block = &F->getEntryBlock();
 
       bool changed = false;
+
       do {
 
-        //traversal {
+        changed = false;
+        std::queue<BasicBlock*> bfs;
+        DenseSet<BasicBlock*> visited;
+        bfs.push(entry_block);
+
+        while (!bfs.empty()) {
+
+          BasicBlock *curr = bfs.front();
+          bfs.pop();
+
+          visited.insert(curr);
+
+          // push all succcessors in the queue
+          for (BasicBlock *succ : successors(curr)) {
+
+            if (visited.find(succ) == visited.end()) {
+
+              bfs.push(succ);
+
+            }
+          }
+
+          BitVector old_in = in[curr];
+          BitVector old_out = out[curr];
 
           // call transfer function
-          // check if IN[B] or OUT[B] changed compared to the previous value
-          // changed = true if they changed otherwise changed = false
+          BitVector new_out = transfer(in[curr], gen[curr], kill[curr]);
 
-        //}
+          // compare the new in and out to the old ones
+          if (new_out != old_out) 
+            changed = true;
+
+        }
 
       } while (changed);
-
     }
   }
 
   // definitions of set operations
-
   BitVector set_union(BitVector b1, BitVector b2) {
 
     unsigned size = b1.size();

@@ -16,7 +16,10 @@
 #include "llvm/IR/CFG.h"
 #include "llvm/Pass.h"
 
+// included for convenience
 #include "llvm/ADT/PostOrderIterator.h"
+#include "llvm/ADT/DenseSet.h"
+#include "llvm/IR/DerivedTypes.h"
 
 #include "available-support.h"
 
@@ -38,32 +41,47 @@ namespace llvm {
 
     };
 
-    typedef ValueMap <BasicBlock*, BitVector> BBVal;
-    typedef ValueMap <Value*, unsigned> VMap;
+    typedef DenseMap <BasicBlock*, BitVector> BBVal;
+    typedef DenseMap <Value*, unsigned> VMap;
     typedef std::map <Expression, unsigned> EMap;
+    typedef std::vector<BasicBlock*> BBList;
 
     class DFF {
 
         private:
+
+        Function *F; // pointer to the function under inspection
+
         bool direction; // 0 forward; 1 backward
         meetOperator meetOp; // meet operator for preds or succ
 
         // can use StringRef instead of BasicBlock*
-        VMap bvec_mapping; // maps the domain to the indexes in the bitmap
+        VMap bvec_mapping; // maps the domain to the indexes in the bitmap. Note: Does the DFF need this?
         BBVal in; // in[B]
         BBVal out; // out[B]
+        
+        // gen and kill sets; Should be calculated by the specific analysis and passed to DFF
+        BBVal gen;
+        BBVal kill;
 
         BitVector T; // Top value of the semi lattice
         BitVector B; // Bottom value of the semi lattice
 
         BitVector (*transfer)(BitVector, BitVector, BitVector); // function pointer to the transfer function of the analysis class
 
-        void traverseCFG(Function &F); // traversal of basicblocks based on the direction boolean
+        void traverseCFG(); // traversal of basicblocks based on the direction boolean
 
         public:
         // constructors for DFF
         DFF();
-        DFF(bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector));
+        DFF(Function *F, bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector), unsigned bitvec_size);
+
+        // methods to set specific sets
+        void setGen(BBVal gen);
+        void setKill(BBVal kill);
+
+        // function to generate possible return blocks
+        BBList getPossibleExitBlocks();
 
         // destructor for DFF
         ~DFF();
