@@ -74,12 +74,12 @@ namespace llvm {
         public:
         // constructors for DFF
         DFF();
-        DFF(Function *F, bool direction, meetOperator meetOp, unsigned bitvec_size, transferFuncTy transferFunc);
+        DFF(Function *F, bool direction, meetOperator meetOp, unsigned bitvec_size, transferFuncTy transferFunc, bool boundary_val);
 
         // methods to set specific sets
         void setGen(BBVal gen);
         void setKill(BBVal kill);
-        void setBoundary(BitVector b_entry, BitVector b_exit);
+        void setBoundary(bool direction, bool boundary_val, unsigned bitvec_size);
 
         // function to generate possible return blocks
         BBList getPossibleExitBlocks();

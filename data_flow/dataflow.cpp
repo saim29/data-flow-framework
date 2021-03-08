@@ -11,7 +11,22 @@ namespace llvm {
 
   }
 
-  DFF::DFF(Function *F, bool direction, meetOperator meetOp,  unsigned bitvec_size, transferFuncTy transferFunc) {
+  void DFF::setBoundary(bool direction, bool boundary_val, unsigned bitvec_size) {
+
+    BitVector init_val = BitVector(bitvec_size, boundary_val);
+
+    if(direction == 0) { // Forwards
+      out[&F->getEntryBlock()] = init_val;
+    }
+
+    else {  // Backwards
+      for (auto ele: getPossibleExitBlocks()) {
+        out[ele] = init_val;
+      }
+    }
+  }
+
+  DFF::DFF(Function *F, bool direction, meetOperator meetOp,  unsigned bitvec_size, transferFuncTy transferFunc, bool boundary_val) {
 
     this->F = F;
     this->direction = direction;
@@ -48,21 +63,15 @@ namespace llvm {
 
     }
 
-  }
+    // Boundary condition
 
-  void DFF::setBoundary(BitVector b_entry, BitVector b_exit) {
+    setBoundary(direction, boundary_val, bitvec_size);
 
-    // boundary conditions
-    in[&F->getEntryBlock()] = b_entry;
-    out[&F->getEntryBlock()] = b_entry;
 
-    for (auto ele: getPossibleExitBlocks()) {
-
-      out[ele] = b_exit;
-
-    }
 
   }
+
+  
 
   void DFF::setGen(BBVal gen) {
 
@@ -95,15 +104,17 @@ namespace llvm {
 
   BitVector DFF::applyMeet(BitVector b1, BitVector b2) {
 
+    BitVector output;
+
     if (meetOp == INTERSECTION) {
 
-      return set_intersection(b1, b2);
+      output = set_intersection(b1, b2);
 
     } else if (meetOp == UNION) {
 
-      return set_union(b1, b2);
+      output = set_union(b1, b2);
     }
-
+    return output;
   }
 
   void DFF::runAnalysis() {
