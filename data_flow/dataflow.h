@@ -55,8 +55,6 @@ namespace llvm {
         bool direction; // 0 forward; 1 backward
         meetOperator meetOp; // meet operator for preds or succ
 
-        // can use StringRef instead of BasicBlock*
-        VMap bvec_mapping; // maps the domain to the indexes in the bitmap. Note: Does the DFF need this?
         BBVal in; // in[B]
         BBVal out; // out[B]
         
