@@ -11,14 +11,14 @@ namespace llvm {
 
   }
 
-  DFF::DFF(Function *F, bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector), unsigned bitvec_size) {
+  DFF::DFF(Function *F, bool direction, meetOperator meetOp,  unsigned bitvec_size, transferFuncTy transferFunc) {
 
     this->F = F;
     this->direction = direction;
     this->meetOp = meetOp;
-    this->transfer = transfer;
-    this->T.resize(bitvec_size);
-    this->B.resize(bitvec_size);
+    this->transferFunc = transferFunc;
+    this->T.resize(bitvec_size, false);
+    this->B.resize(bitvec_size, false);
     
     // initialize top and bottom elements of the semi-lattice
     if (meetOp == INTERSECTION) {
@@ -40,12 +40,17 @@ namespace llvm {
       }
     }
 
+    // initial value of in and out 
     for (BasicBlock &B : *F) {
 
       in[&B] = T;
       out[&B] = T;
 
     }
+
+    // boundary conditions
+
+
   }
 
   void DFF::setGen(BBVal gen) {
@@ -120,7 +125,7 @@ namespace llvm {
           BitVector old_out = out[curr];
 
           // call transfer function
-          BitVector new_in = transfer(out[curr], gen[curr], kill[curr]);
+          BitVector new_in = transferFunc(out[curr], gen[curr], kill[curr]);
 
           // compare the new in and out to the old ones
           if (new_in != old_in) 
@@ -174,7 +179,7 @@ namespace llvm {
           BitVector old_out = out[curr];
 
           // call transfer function
-          BitVector new_out = transfer(in[curr], gen[curr], kill[curr]);
+          BitVector new_out = transferFunc(in[curr], gen[curr], kill[curr]);
 
           // compare the new in and out to the old ones
           if (new_out != old_out) 

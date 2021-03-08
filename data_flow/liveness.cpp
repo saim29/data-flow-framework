@@ -38,7 +38,7 @@ namespace {
       unsigned size_bitvec = bvec_mapping.size();
 
       //initialize data flow framework
-      DFF dff(&F, true, UNION, &transfer_function, size_bitvec);
+      DFF dff(&F, true, UNION,  size_bitvec, &transfer_function);
 
       // compute use and def sets here
       populate_use_and_def(F);

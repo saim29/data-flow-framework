@@ -45,6 +45,7 @@ namespace llvm {
     typedef DenseMap <Value*, unsigned> VMap;
     typedef std::map <Expression, unsigned> EMap;
     typedef std::vector<BasicBlock*> BBList;
+    typedef BitVector (*transferFuncTy) (BitVector, BitVector, BitVector);
 
     class DFF {
 
@@ -65,14 +66,14 @@ namespace llvm {
         BitVector T; // Top value of the semi lattice
         BitVector B; // Bottom value of the semi lattice
 
-        BitVector (*transfer)(BitVector, BitVector, BitVector); // function pointer to the transfer function of the analysis class
+        BitVector (*transferFunc)(BitVector, BitVector, BitVector); // function pointer to the transfer function of the analysis class
 
         void traverseCFG(); // traversal of basicblocks based on the direction boolean
 
         public:
         // constructors for DFF
         DFF();
-        DFF(Function *F, bool direction, meetOperator meetOp, BitVector(*transfer)(BitVector, BitVector, BitVector), unsigned bitvec_size);
+        DFF(Function *F, bool direction, meetOperator meetOp, unsigned bitvec_size, transferFuncTy transferFunc);
 
         // methods to set specific sets
         void setGen(BBVal gen);
