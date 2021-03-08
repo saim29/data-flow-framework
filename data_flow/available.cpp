@@ -18,8 +18,10 @@ namespace {
   // declare transfer function here
   BitVector transfer_function(BitVector in, BitVector e_gen, BitVector e_kill) {
 
-    BitVector intermediate = set_diff(in, e_kill);
-    return set_union(intermediate, e_gen);
+    //BitVector intermediate = set_diff(in, e_kill);
+    //return set_union(intermediate, e_gen);
+
+    return set_union(in, e_gen);
 
   }
 
