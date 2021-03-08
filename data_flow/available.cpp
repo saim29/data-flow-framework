@@ -46,7 +46,7 @@ namespace {
       unsigned size_bitvec = exp_bvec_mapping.size();
 
       //initialize data flow framework
-      DFF dff(&F, false, INTERSECTION, size_bitvec, &transfer_function);
+      DFF dff(&F, false, INTERSECTION, size_bitvec, &transfer_function, true);
 
       // compute use and def sets here
       populate_egen_ekill(F);
