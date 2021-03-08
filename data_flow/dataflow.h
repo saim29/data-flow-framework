@@ -68,8 +68,8 @@ namespace llvm {
 
         BitVector (*transferFunc)(BitVector, BitVector, BitVector); // function pointer to the transfer function of the analysis class
 
-        void traverseCFG(); // traversal of basicblocks based on the direction boolean
         BitVector applyMeet(BitVector b1, BitVector b2); //function to apply meet 
+        void runAnalysis(); // traversal of basicblocks based on the direction boolean
 
         public:
         // constructors for DFF

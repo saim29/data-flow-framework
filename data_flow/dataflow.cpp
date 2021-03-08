@@ -106,7 +106,7 @@ namespace llvm {
 
   }
 
-  void DFF::traverseCFG() {
+  void DFF::runAnalysis() {
 
     if (direction) {
 
