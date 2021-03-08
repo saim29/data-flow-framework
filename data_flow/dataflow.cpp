@@ -48,8 +48,19 @@ namespace llvm {
 
     }
 
-    // boundary conditions
+  }
 
+  void DFF::setBoundary(BitVector b_entry, BitVector b_exit) {
+
+    // boundary conditions
+    in[&F->getEntryBlock()] = b_entry;
+    out[&F->getEntryBlock()] = b_entry;
+
+    for (auto ele: getPossibleExitBlocks()) {
+
+      out[ele] = b_exit;
+
+    }
 
   }
 
@@ -77,10 +88,22 @@ namespace llvm {
           ret.push_back(&B);
           break;
         }
-
       }
     }
     return ret;
+  }
+
+  BitVector DFF::applyMeet(BitVector b1, BitVector b2) {
+
+    if (meetOp == INTERSECTION) {
+
+      return set_intersection(b1, b2);
+
+    } else if (meetOp == UNION) {
+
+      return set_union(b1, b2);
+    }
+
   }
 
   void DFF::traverseCFG() {
@@ -110,6 +133,14 @@ namespace llvm {
           bfs.pop();
 
           visited.insert(curr);
+
+
+          // apply meet operator here
+          for (BasicBlock *succ : successors(curr)) {
+
+            out[curr]= applyMeet(out[curr], out[succ]);
+
+          }
 
           // push all succcessors in the queue
           for (BasicBlock *pred : predecessors(curr)) {
@@ -164,6 +195,13 @@ namespace llvm {
           bfs.pop();
 
           visited.insert(curr);
+
+          // apply meet operator here
+          for (BasicBlock *pred : predecessors(curr)) {
+
+            in[curr]= applyMeet(in[curr], in[pred]);
+
+          }
 
           // push all succcessors in the queue
           for (BasicBlock *succ : successors(curr)) {
