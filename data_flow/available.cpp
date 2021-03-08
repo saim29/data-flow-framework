@@ -15,6 +15,15 @@ using namespace llvm;
 using namespace std;
 
 namespace {
+  // declare transfer function here
+  BitVector transfer_function(BitVector in, BitVector e_gen, BitVector e_kill) {
+
+    BitVector intermediate = set_diff(in, e_kill);
+    return set_union(intermediate, e_gen);
+
+  }
+
+
   class AvailableExpressions : public FunctionPass {
     
   public:
@@ -27,8 +36,31 @@ namespace {
       
       // Here's some code to familarize you with the Expression
       // class and pretty printing code we've provided:
+
+      // traverse basicblocks to find a mapping between bitvector indexes and variables
+      map_indexes(F);
+
+      // initialize top element and bottom element according to the meetOp
+      unsigned size_bitvec = exp_bvec_mapping.size();
+
+      //initialize data flow framework
+      DFF dff(&F, false, INTERSECTION, &transfer_function, size_bitvec);
+
+      // compute use and def sets here
+      populate_egen_ekill(F);
+
+      // pass the use and def sets to the DFF
+      dff.setGen(e_gen);
+      dff.setKill(e_kill);
+
+      // pass everything to the dff and start the analysis
+
+      // Did not modify the incoming Function.
+      return false;
       
-      vector<Expression> expressions;
+
+
+      /*vector<Expression> expressions;
       for (Function::iterator FI = F.begin(), FE = F.end(); FI != FE; ++FI) {
 	       BasicBlock* block = &*FI;
 	       for (BasicBlock::iterator i = block->begin(), e = block->end(); i!=e; ++i) {
@@ -47,7 +79,7 @@ namespace {
       printSet(&expressions);
       
       // Did not modify the incoming Function.
-      return false;
+      return false;*/
     }
     
     virtual void getAnalysisUsage(AnalysisUsage& AU) const {
