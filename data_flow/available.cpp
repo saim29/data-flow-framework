@@ -85,6 +85,50 @@ namespace {
       }
     }
 
+
+    // We have the U list of all expressions (with their indices)
+    // Just generate and kill them per basic block
+    void populate_egen_ekill(Function &F) {
+    
+      unsigned size = exp_bvec_mapping.size();
+      for (BasicBlock &B: F) {
+        
+        BitVector bvec(size);
+        e_gen.insert({&B, bvec});
+        e_kill.insert({&B, bvec});
+
+        for (Instruction &I: B) {
+
+          // e_gen part
+          // Convert to expression only if a binary operator 
+          if(BinaryOperator *BO = dyn_cast<BinaryOperator>(&I)) {
+            Expression exp = Expression(&I);
+
+            // Now look this expression up
+            EMap::iterator iter =  exp_bvec_mapping.find(exp)
+            if(iter != exp_bvec_mapping.end()) {
+              
+              // Generate the expression
+              unsigned index = iter->second;
+              e_gen.set(index)
+
+            }
+
+          }
+
+
+          //e_kill is unnecessary since you will never ever re-assign a variable in SSA. 
+
+
+
+
+
+          
+
+        }
+      }
+    }
+
   
   
   private:
