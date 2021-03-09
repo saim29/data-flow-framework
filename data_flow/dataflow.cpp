@@ -175,6 +175,8 @@ namespace llvm {
 
           if (meetRes.size() > 0)
             out[curr] = meetRes;
+          else
+            out[curr] = in_exit;
 
           // push all succcessors in the queue
           for (BasicBlock *pred : predecessors(curr)) {
@@ -248,6 +250,8 @@ namespace llvm {
 
           if (meetRes.size() > 0)
             in[curr] = meetRes;
+          else
+            in[curr] = out_entry;
 
           // push all succcessors in the queue
           for (BasicBlock *succ : successors(curr)) {
