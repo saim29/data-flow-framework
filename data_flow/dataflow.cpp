@@ -71,7 +71,9 @@ namespace llvm {
 
   }
 
-  
+  DFF::~DFF() {
+    
+  }  
 
   void DFF::setGen(BBVal gen) {
 

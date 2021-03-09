@@ -37,20 +37,19 @@ namespace {
       // initialize top element and bottom element according to the meetOp
       unsigned size_bitvec = bvec_mapping.size();
 
-      // //initialize data flow framework
-      // DFF dff(&F, true, UNION,  size_bitvec, &transfer_function, false);
+      //initialize data flow framework
+      DFF dff(&F, true, UNION,  size_bitvec, &transfer_function, false);
 
-      // // compute use and def sets here
+      // compute use and def sets here
       populate_use_and_def(F);
 
-      // // pass the use and def sets to the DFF
-      // dff.setGen(use);
-      // dff.setKill(def);
+      // pass the use and def sets to the DFF
+      dff.setGen(use);
+      dff.setKill(def);
 
       // pass everything to the dff and start the analysis
 
       // Did not modify the incoming Function.
-
       return false;
     }
 
