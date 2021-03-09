@@ -240,6 +240,55 @@ namespace llvm {
     }
   }
 
+  template<typename A> void DFF::printRes(std::map<A, unsigned> mapping) {
+
+    A rev_mapping[mapping.size()];
+
+    for (auto ele : mapping) {
+
+      unsigned ind = ele->second;
+      A val = ele->first;
+
+      rev_mapping[ind] = val;
+
+    }
+
+    for (BasicBlock &B: *F) {
+
+      StringRef bName = B.getName();
+
+      outs () << "==============" + bName + "==============" << "\n";
+
+      outs () << "\nIN: " << bName << "\n";
+      print(in[&B], rev_mapping);
+
+      outs () << "\nGEN: " << bName << "\n";
+      print(gen[&B], rev_mapping);
+
+      outs () << "\nKILL: " << bName << "\n";
+      print(kill[&B], rev_mapping);
+
+      outs () << "\nOUT: " << bName << "\n";
+      print(out[&B], rev_mapping);
+
+      outs () << "\n============================" << "\n";
+
+    }
+
+  }
+
+  template<typename A> void DFF::print(BitVector b, A rev_mapping[]) {
+
+    for (int i=0; i<b.size(); i++) {
+
+      if (b[i]) {
+
+        outs() << rev_mapping[i] << "\n";
+
+      }
+    }
+  }
+
   // definitions of set operations
   BitVector set_union(BitVector b1, BitVector b2) {
 

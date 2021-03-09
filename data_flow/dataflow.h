@@ -42,7 +42,7 @@ namespace llvm {
     };
 
     typedef DenseMap <BasicBlock*, BitVector> BBVal;
-    typedef DenseMap <Value*, unsigned> VMap;
+    typedef std::map <Value*, unsigned> VMap;
     typedef std::map <Expression, unsigned> EMap;
     typedef std::vector<BasicBlock*> BBList;
     typedef BitVector (*transferFuncTy) (BitVector, BitVector, BitVector);
@@ -71,6 +71,9 @@ namespace llvm {
         BitVector applyMeet(BitVector b1, BitVector b2); //function to apply meet 
         void runAnalysis(); // traversal of basicblocks based on the direction boolean
 
+        // function to generate possible return blocks
+        BBList getPossibleExitBlocks();
+
         public:
         // constructors for DFF
         DFF();
@@ -81,8 +84,9 @@ namespace llvm {
         void setKill(BBVal kill);
         void setBoundary(bool direction, bool boundary_val, unsigned bitvec_size);
 
-        // function to generate possible return blocks
-        BBList getPossibleExitBlocks();
+        // function to print all results on convergence
+        template<typename A> void printRes(std::map<A, unsigned> mapping);
+        template<typename A> void print(BitVector b, A rev_mapping[]);
 
         // destructor for DFF
         ~DFF();
