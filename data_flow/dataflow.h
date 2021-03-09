@@ -89,7 +89,7 @@ namespace llvm {
 
         // function to print all results on convergence
         template<class A> 
-        void printRes(std::map<A, unsigned> mapping);
+        void printRes(std::map<A, unsigned> mapping, StringRef label1, StringRef label2);
 
         template<class A> 
         void print(BitVector b, A rev_mapping[]);
@@ -104,7 +104,7 @@ namespace llvm {
 
 // print functions moved here. C++ requirement
   template<class A> 
-  void DFF::printRes(std::map<A, unsigned> mapping) {
+  void DFF::printRes(std::map<A, unsigned> mapping, StringRef label1, StringRef label2) {
 
     A rev_mapping[mapping.size()];
 
@@ -126,10 +126,10 @@ namespace llvm {
       outs () << "\nIN: \n";
       print<A>(in[&B], rev_mapping);
 
-      outs () << "\nGEN: \n";
+      outs () << "\n" << label1 << "\n";
       print<A>(gen[&B], rev_mapping);
 
-      outs () << "\nKILL: \n";
+      outs () << "\n" << label2 << "\n";
       print<A>(kill[&B], rev_mapping);
 
       outs () << "\nOUT: \n";

@@ -54,7 +54,7 @@ namespace {
       dff.runAnalysis();
 
       // print the results
-      dff.printRes<Value*>(bvec_mapping);
+      dff.printRes<Value*>(bvec_mapping, "USE", "DEF");
 
       // Did not modify the incoming Function.
       return false;

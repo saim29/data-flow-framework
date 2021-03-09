@@ -59,7 +59,7 @@ namespace {
       dff.runAnalysis();
 
       // print the results
-      dff.printRes<Expression*>(exp_bvec_mapping);
+      dff.printRes<Expression*>(exp_bvec_mapping, "GEN", "KILL");
       // Did not modify the incoming Function.
       return false;
       
