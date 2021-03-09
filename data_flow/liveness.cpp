@@ -37,19 +37,20 @@ namespace {
       // initialize top element and bottom element according to the meetOp
       unsigned size_bitvec = bvec_mapping.size();
 
-      //initialize data flow framework
-      DFF dff(&F, true, UNION,  size_bitvec, &transfer_function, false);
+      // //initialize data flow framework
+      // DFF dff(&F, true, UNION,  size_bitvec, &transfer_function, false);
 
-      // compute use and def sets here
+      // // compute use and def sets here
       populate_use_and_def(F);
 
-      // pass the use and def sets to the DFF
-      dff.setGen(use);
-      dff.setKill(def);
+      // // pass the use and def sets to the DFF
+      // dff.setGen(use);
+      // dff.setKill(def);
 
       // pass everything to the dff and start the analysis
 
       // Did not modify the incoming Function.
+
       return false;
     }
 
@@ -81,7 +82,7 @@ namespace {
       unsigned size = bvec_mapping.size();
       for (BasicBlock &B: F) {
         
-        BitVector bvec(size);
+        BitVector bvec(size, false);
         use.insert({&B, bvec});
         def.insert({&B, bvec});
 
@@ -89,18 +90,30 @@ namespace {
 
           Value *v = &I;
 
-          if (v->getNumUses() > 0) {
-            
+          if (bvec_mapping.find(v) != bvec_mapping.end()) {
+
             unsigned ind = bvec_mapping[v];
-            def[&B][ind] = 1;
+
+            if (!use[&B][ind])
+              def[&B][ind] = 1;
 
           }
 
-          if (v->isUsedInBasicBlock(&B)) {
+          for (User::op_iterator op = I.op_begin(), opE = I.op_end(); op != opE; ++op) {
 
-            unsigned ind = bvec_mapping[v];
-            use[&B][ind] = 1;
+              Value* val = *op;
 
+              if (bvec_mapping.find(val) != bvec_mapping.end()) {
+                
+                unsigned ind = bvec_mapping[val];
+
+                if (!def[&B][ind]) {
+
+                  use[&B][ind];
+
+                }
+
+              }
           }
 
         }
