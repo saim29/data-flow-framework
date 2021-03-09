@@ -56,7 +56,10 @@ namespace {
       dff.setKill(e_kill);
 
       // pass everything to the dff and start the analysis
+      dff.runAnalysis();
 
+      // print the results
+      //dff.printRes<Expression>(exp_bvec_mapping);
       // Did not modify the incoming Function.
       return false;
       
@@ -100,11 +103,13 @@ namespace {
           // Convert to expression only if a binary operator 
           if(BinaryOperator *BO = dyn_cast<BinaryOperator>(&I)) {
 
-            Expression exp = Expression(&I);
+            Expression *exp = new Expression(&I);
 
             EMap::iterator iter = exp_bvec_mapping.begin();
             while(iter != exp_bvec_mapping.end()) {
-              if(iter->first == exp)
+              // Check if the expression generated above and the one pointed by the iterator are == 
+              // == seems to be defined in available-support and compares the operands and operator
+              if(*(iter->first) == *exp)
                 break;
 
               iter++;
@@ -139,7 +144,7 @@ namespace {
             Expression exp = Expression(&I);
 
             // Now look this expression up
-            EMap::iterator iter =  exp_bvec_mapping.find(exp);
+            auto iter =  exp_bvec_mapping.begin();
             if(iter != exp_bvec_mapping.end()) {
               
               // Generate the expression
