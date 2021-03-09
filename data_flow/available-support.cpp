@@ -44,6 +44,13 @@ namespace llvm {
     }
   }
 
+  // Very simple dump mechanism
+  void Expression::dump() const {
+
+    outs() << this->toString() << "\n";
+
+  }
+
   // A pretty printer for Expression objects
   // Feel free to alter in any way you like
   std::string Expression::toString() const {

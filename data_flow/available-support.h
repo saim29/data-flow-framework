@@ -26,6 +26,7 @@ namespace llvm {
     bool operator== (const Expression &e2) const;
     bool operator< (const Expression &e2) const;
     std::string toString() const;
+    void dump() const;
   };
 
   void printSet(std::vector<Expression> * x);

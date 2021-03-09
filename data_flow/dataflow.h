@@ -144,22 +144,7 @@ namespace llvm {
   void DFF::print(BitVector b, A rev_mapping[]) {
 
     for (int i=0; i<b.size(); i++) {
-/*
-      if (b[i]) {
-        if(! std::is_same<A, Expression>::value){
-          //outs() << rev_mapping[i] << "\n";
-          Expression exp = rev_mapping[i];
-          outs() << exp.toString() << "\n";
-          
-        }
-          
-        else {
-          rev_mapping[i]->dump();
-        }
-*/
-
-        rev_mapping[i]->dump();
-      //}
+      rev_mapping[i]->dump();
     }
   }
 }
