@@ -144,7 +144,9 @@ namespace llvm {
   void DFF::print(BitVector b, A rev_mapping[]) {
 
     for (int i=0; i<b.size(); i++) {
-      rev_mapping[i]->dump();
+
+      if (b[i])
+        rev_mapping[i]->dump();
     }
   }
 }
