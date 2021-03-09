@@ -17,12 +17,15 @@ namespace llvm {
 
     if(direction == 0) { // Forwards
       out[&F->getEntryBlock()] = init_val;
+      out_entry = init_val;
     }
 
     else {  // Backwards
       for (auto ele: getPossibleExitBlocks()) {
-        out[ele] = init_val;
+        in[ele] = init_val;
       }
+
+      in_exit = init_val;
     }
   }
 

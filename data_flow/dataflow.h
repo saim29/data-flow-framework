@@ -66,6 +66,10 @@ namespace llvm {
         BitVector T; // Top value of the semi lattice
         BitVector B; // Bottom value of the semi lattice
 
+        // bit vectors for unique (pseudo) ENTRY and EXIT blocks
+        BitVector in_exit;
+        BitVector out_entry;
+
         BitVector (*transferFunc)(BitVector, BitVector, BitVector); // function pointer to the transfer function of the analysis class
 
         BitVector applyMeet(BitVector b1, BitVector b2); //function to apply meet 
