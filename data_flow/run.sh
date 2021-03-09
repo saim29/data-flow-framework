@@ -17,4 +17,7 @@ echo "Obtaining human-readble .ll file ..."
 llvm-dis $infile
 
 echo "Running analysis pass ..."
-opt -load ./$lib -$pass $infile
+opt -load ./$lib -$pass $infile -o out
+
+rm ./out
+rm *.o
