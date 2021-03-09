@@ -284,8 +284,14 @@ namespace llvm {
     for (int i=0; i<b.size(); i++) {
 
       if (b[i]) {
-
-        outs() << rev_mapping[i] << "\n";
+        if(!std::is_same<A, Expression>::value){
+          outs() << rev_mapping[i] << "\n";
+        }
+          
+        else {
+          Expression exp = rev_mapping[i];
+          outs() << exp.toString() << "\n";
+        }
 
       }
     }
