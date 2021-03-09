@@ -59,7 +59,7 @@ namespace {
       dff.runAnalysis();
 
       // print the results
-      //dff.printRes<Expression>(exp_bvec_mapping);
+      dff.printRes<Expression*>(exp_bvec_mapping);
       // Did not modify the incoming Function.
       return false;
       
@@ -105,16 +105,20 @@ namespace {
 
             Expression *exp = new Expression(&I);
 
-            EMap::iterator iter = exp_bvec_mapping.begin();
+            auto iter = exp_bvec_mapping.begin();
             while(iter != exp_bvec_mapping.end()) {
               // Check if the expression generated above and the one pointed by the iterator are == 
               // == seems to be defined in available-support and compares the operands and operator
-              if(*(iter->first) == *exp)
+              if(*(iter->first) == *exp) {
+                // Found it. Already exists in the bitvector. delete exp and break out
+                delete exp;
                 break;
+              }
 
               iter++;
             }
 
+            // Not found. Add it to the bit vector and increment the index
             if(iter == exp_bvec_mapping.end()){
               exp_bvec_mapping.insert({exp, ind});
               ind++;
@@ -145,16 +149,20 @@ namespace {
 
             // Now look this expression up
             auto iter =  exp_bvec_mapping.begin();
-            if(iter != exp_bvec_mapping.end()) {
-              
-              // Generate the expression
-              unsigned index = iter->second;
-              e_gen[&B][index] = 1;
-
+            while(iter != exp_bvec_mapping.end()) {
+              // Check if the expression generated above and the one pointed by the iterator are == 
+              // == seems to be defined in available-support and compares the operands and operator
+              if(*(iter->first) == exp) {
+                unsigned index = iter->second;
+                e_gen[&B][index] = 1;
+                break;
+              }
+                
+              // Keep iterating
+              iter++;
             }
-
           }
-
+          
 
           //e_kill is unnecessary since you will never ever re-assign a variable in SSA. 
 
