@@ -58,8 +58,13 @@ namespace llvm {
     // initial value of in and out 
     for (BasicBlock &B : *F) {
 
-      in[&B] = T;
-      out[&B] = T;
+      if (direction) {
+        in[&B] = T;
+      } else {
+        out[&B] = T;
+      }
+        // in[&B] = T;
+        // out[&B] = T;
 
     }
 
@@ -72,7 +77,7 @@ namespace llvm {
   }
 
   DFF::~DFF() {
-    
+
   }  
 
   void DFF::setGen(BBVal gen) {
@@ -121,6 +126,10 @@ namespace llvm {
 
   void DFF::runAnalysis() {
 
+    outs () << "********** Function: " + F->getName() + " ***********" << "\n";
+
+    unsigned numIter = 0;
+
     if (direction) {
 
       // backward analysis
@@ -147,13 +156,22 @@ namespace llvm {
 
           visited.insert(curr);
 
-
           // apply meet operator here
+          BitVector meetRes;
           for (BasicBlock *succ : successors(curr)) {
 
-            out[curr]= applyMeet(out[curr], out[succ]);
+            meetRes = in[succ];
+            break;
 
           }
+          for (BasicBlock *succ : successors(curr)) {
+
+            meetRes = applyMeet(meetRes, in[succ]);
+
+          }
+
+          if (meetRes.size() > 0)
+            out[curr] = meetRes;
 
           // push all succcessors in the queue
           for (BasicBlock *pred : predecessors(curr)) {
@@ -170,6 +188,7 @@ namespace llvm {
 
           // call transfer function
           BitVector new_in = transferFunc(out[curr], gen[curr], kill[curr]);
+          in[curr] = new_in;
 
           // compare the new in and out to the old ones
           if (new_in != old_in) 
@@ -177,6 +196,7 @@ namespace llvm {
 
         }
 
+        numIter++;
       } while (changed);
 
 
@@ -210,11 +230,21 @@ namespace llvm {
           visited.insert(curr);
 
           // apply meet operator here
+          BitVector meetRes;
           for (BasicBlock *pred : predecessors(curr)) {
 
-            in[curr]= applyMeet(in[curr], in[pred]);
+            meetRes = out[pred];
+            break;
 
           }
+          for (BasicBlock *pred : predecessors(curr)) {
+
+            meetRes = applyMeet(meetRes, out[pred]);
+
+          }
+
+          if (meetRes.size() > 0)
+            in[curr] = meetRes;
 
           // push all succcessors in the queue
           for (BasicBlock *succ : successors(curr)) {
@@ -231,6 +261,7 @@ namespace llvm {
 
           // call transfer function
           BitVector new_out = transferFunc(in[curr], gen[curr], kill[curr]);
+          out[curr] = new_out;
 
           // compare the new in and out to the old ones
           if (new_out != old_out) 
@@ -238,57 +269,11 @@ namespace llvm {
 
         }
 
+        numIter++;
       } while (changed);
     }
-  }
 
-  template<typename A> void DFF::printRes(std::map<A, unsigned> mapping) {
-
-    A rev_mapping[mapping.size()];
-
-    for (auto ele : mapping) {
-
-      unsigned ind = ele->second;
-      A val = ele->first;
-
-      rev_mapping[ind] = val;
-
-    }
-
-    for (BasicBlock &B: *F) {
-
-      StringRef bName = B.getName();
-
-      outs () << "==============" + bName + "==============" << "\n";
-
-      outs () << "\nIN: " << bName << "\n";
-      print(in[&B], rev_mapping);
-
-      outs () << "\nGEN: " << bName << "\n";
-      print(gen[&B], rev_mapping);
-
-      outs () << "\nKILL: " << bName << "\n";
-      print(kill[&B], rev_mapping);
-
-      outs () << "\nOUT: " << bName << "\n";
-      print(out[&B], rev_mapping);
-
-      outs () << "\n============================" << "\n";
-
-    }
-
-  }
-
-  template<typename A> void DFF::print(BitVector b, A rev_mapping[]) {
-
-    for (int i=0; i<b.size(); i++) {
-
-      if (b[i]) {
-
-        outs() << rev_mapping[i] << "\n";
-
-      }
-    }
+    outs() << "Convergence: " << numIter << " iterations" <<"\n";
   }
 
   // definitions of set operations

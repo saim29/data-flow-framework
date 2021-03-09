@@ -47,7 +47,14 @@ namespace {
       dff.setGen(use);
       dff.setKill(def);
 
+      //dff.printRes<Value*>(bvec_mapping);
+
+
       // pass everything to the dff and start the analysis
+      dff.runAnalysis();
+
+      // print the results
+      dff.printRes<Value*>(bvec_mapping);
 
       // Did not modify the incoming Function.
       return false;
@@ -68,6 +75,8 @@ namespace {
           if (v->getNumUses() > 0) {
 
             if (bvec_mapping.find(v) == bvec_mapping.end()) {
+
+              //v->dump();
               bvec_mapping.insert({v, ind});
               ind++;
             }
@@ -98,6 +107,7 @@ namespace {
 
           }
 
+          // ignore phi node operands since they are pseudo-instructions?
           for (User::op_iterator op = I.op_begin(), opE = I.op_end(); op != opE; ++op) {
 
               Value* val = *op;
@@ -107,9 +117,7 @@ namespace {
                 unsigned ind = bvec_mapping[val];
 
                 if (!def[&B][ind]) {
-
-                  use[&B][ind];
-
+                  use[&B][ind] = 1; 
                 }
 
               }
