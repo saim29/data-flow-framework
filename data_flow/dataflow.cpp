@@ -288,16 +288,21 @@ namespace llvm {
     for (int i=0; i<b.size(); i++) {
 
       if (b[i])
-        outs() << getShortValueName(rev_mapping[i]) << "\n";
+        outs() << getShortValueName(rev_mapping[i]) << ",  ";
     }
+
+    outs () << "\n";
   }
 
   void DFF::print(BitVector b, Expression *rev_mapping[]) {
     for (int i=0; i<b.size(); i++) {
 
       if (b[i])
-        rev_mapping[i]->dump();
+        outs() << rev_mapping[i]->toString() << ",  ";
+
     }
+
+    outs () << "\n";
   }
 
   // definitions of set operations
