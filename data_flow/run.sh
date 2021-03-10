@@ -21,3 +21,4 @@ opt -load ./$lib -$pass $infile -o out
 
 rm ./out
 rm *.o
+rm *.so
