@@ -147,15 +147,6 @@ namespace llvm {
     }
   }
 
-  void dump(Expression *e) {
 
-    outs() << e->toString() << "\n";
 
-  }
-
-  void dump(Value *v) {
-
-    outs() << getShortValueName(v) << "\n";
-
-  }
 }
