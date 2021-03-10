@@ -67,6 +67,18 @@ namespace {
     void map_indexes(Function &F) {
 
       unsigned ind = 0;
+
+      // track input arguments to function
+
+      typedef Function::arg_iterator FArg;
+      for (FArg argS = F.arg_begin(), argE = F.arg_end(); argS != argE; ++argS) {
+
+        Value *v = dyn_cast<Value>(argS);
+
+        bvec_mapping.insert({v, ind});
+        ind++;
+      }
+
       for (BasicBlock &B: F) {
 
         for (Instruction &I: B) {
