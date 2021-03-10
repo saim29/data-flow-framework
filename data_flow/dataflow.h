@@ -91,8 +91,12 @@ namespace llvm {
         template<class A> 
         void printRes(std::map<A, unsigned> mapping, StringRef label1, StringRef label2);
 
-        template<class A> 
-        void print(BitVector b, A rev_mapping[]);
+        // template<class A> 
+        // void print(BitVector b, A rev_mapping[]);
+
+        // overloaded print functions
+        void print(BitVector b, Value *rev_mapping[]); 
+        void print(BitVector b, Expression *rev_mapping[]);
 
         // destructor for DFF
         ~DFF();
@@ -124,16 +128,16 @@ namespace llvm {
       outs () << "==============" + bName + "==============" << "\n";
 
       outs () << "\nIN: \n";
-      print<A>(in[&B], rev_mapping);
+      print(in[&B], rev_mapping);
 
       outs () << "\n" << label1 << "\n";
-      print<A>(gen[&B], rev_mapping);
+      print(gen[&B], rev_mapping);
 
       outs () << "\n" << label2 << "\n";
-      print<A>(kill[&B], rev_mapping);
+      print(kill[&B], rev_mapping);
 
       outs () << "\nOUT: \n";
-      print<A>(out[&B], rev_mapping);
+      print(out[&B], rev_mapping);
 
       outs () << "\n====================================" << "\n";
 
@@ -144,15 +148,15 @@ namespace llvm {
 
     
 
-  template<class A> 
-  void DFF::print(BitVector b, A rev_mapping[]) {
+  // template<class A> 
+  // void DFF::print(BitVector b, A rev_mapping[]) {
 
-    for (int i=0; i<b.size(); i++) {
+  //   for (int i=0; i<b.size(); i++) {
 
-      if (b[i])
-        rev_mapping[i]->dump();
-    }
-  }
+  //     if (b[i])
+  //       rev_mapping[i]->dump();
+  //   }
+  // }
 }
 
 #endif

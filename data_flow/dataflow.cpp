@@ -283,6 +283,23 @@ namespace llvm {
     outs() << "Convergence: " << numIter << " iterations" <<"\n";
   }
 
+  //overloaded print functions. Must be defined by analysis specific classes
+  void DFF::print(BitVector b, Value *rev_mapping[]) {
+    for (int i=0; i<b.size(); i++) {
+
+      if (b[i])
+        outs() << getShortValueName(rev_mapping[i]) << "\n";
+    }
+  }
+
+  void DFF::print(BitVector b, Expression *rev_mapping[]) {
+    for (int i=0; i<b.size(); i++) {
+
+      if (b[i])
+        rev_mapping[i]->dump();
+    }
+  }
+
   // definitions of set operations
   BitVector set_union(BitVector b1, BitVector b2) {
 
