@@ -3,21 +3,25 @@ An LLVM wrapper pass for implementing different data flow analysis
 
 ## Team Members - Saim Ahmad, Tanmaya Mishra
 
-# Folder Layout:
-README.txt
-data_flow
-| tests
-    | available-test-m2r.bc
-    | liveness-test-m2r.bc
-| available.cpp  
-| available-support.cpp 
-| available-support.h 
-| dataflow.cpp  dataflow.h 
-| liveness.cpp 
-| Makefile 
+## Folder Layout:
+<pre>
+.
+├── data_flow
+│   ├── available.cpp
+│   ├── available-support.cpp
+│   ├── available-support.h
+│   ├── dataflow.cpp
+│   ├── dataflow.h
+│   ├── liveness.cpp
+│   ├── Makefile
+│   ├── run.sh
+│   └── tests
+│       ├── available-test-m2r.bc
+│       └── liveness-test-m2r.bc
+└── README.md
+</pre>
 
-
-# To build and run:
+## To build and run:
 
 1. Make run.sh executable - `chmod +x run.sh`
 2. Synopsis
