@@ -26,14 +26,15 @@ An LLVM wrapper pass for implementing different data flow analysis
 1. Make run.sh executable - `chmod +x run.sh`
 2. Synopsis
 
-    ./run.sh [analysis] [input file]
+    `./run.sh [analysis] [input file]`
     
     - Input files available under tests 
     - Analysis : available, liveness
    
 3. Example output
 
-$ ./run.sh available tests/available-test-m2r.bc 
+`$ ./run.sh available tests/available-test-m2r.bc`
+<pre>
 -> Cleaning last built analysis passes
 rm -f *.o *~ *.so
 -> Building analysis passes
@@ -108,3 +109,4 @@ OUT:
 %argc + 50,  %add + 96,  96 * %add,  50 - 96,  %sub4 + %f.0,  
 
 ====================================
+</pre>
