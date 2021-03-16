@@ -33,8 +33,8 @@ An LLVM wrapper pass for implementing different data flow analysis
    
 3. Example output
 
-`$ ./run.sh available tests/available-test-m2r.bc`
 <pre>
+$ ./run.sh available tests/available-test-m2r.bc
 -> Cleaning last built analysis passes
 rm -f *.o *~ *.so
 -> Building analysis passes
