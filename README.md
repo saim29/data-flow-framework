@@ -1,6 +1,7 @@
-## ECE 5984 Compiler Optimizations - Assignment 2 Programming
-# An LLVM wrapper pass for implementing different data flow analysis 
-# Team Members - Saim Ahmad, Tanmaya Mishra
+# ECE 5984 Compiler Optimizations - Assignment 2 Programming
+An LLVM wrapper pass for implementing different data flow analysis 
+
+## Team Members - Saim Ahmad, Tanmaya Mishra
 
 # Folder Layout:
 README.txt
